@@ -41,6 +41,23 @@ async function refresh() {
   feedback('正在计算…');
   try {
     let balance, report, catalog, recall;
+    if (section === 'dispatch') {
+      [balance, catalog, recall] = await Promise.all([
+        api(`/api/balance?${params}`), api(`/api/catalog?${params}`), api(`/api/recall?${params}`),
+      ]);
+      if (version !== loadVersion) return;
+      await loadDispatch();
+      if (version !== loadVersion) return;
+      activeQuery = params;
+      renderMetrics(balance, recall);
+      document.querySelector('#snapshot').textContent = `盘点至 ${compactTime(balance.as_of)} UTC`;
+      document.querySelector('#lots').replaceChildren(...[...new Set(Object.values(catalog.parts).map(p => p.batch))].sort().map(value => {
+        const option = elem('option'); option.value = value; return option;
+      }));
+      updateLinks(params);
+      feedback('计算完成');
+      return;
+    }
     if (archiveId) {
       const saved = await api(`/api/runs/${encodeURIComponent(archiveId)}`);
       if (version !== loadVersion) return;

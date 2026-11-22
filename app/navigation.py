@@ -1,6 +1,7 @@
 SECTIONS = {
     "recall": "召回反查", "intake": "返件登记", "catalog": "部件字典", "sequence": "拆装序列",
     "graph": "谱系校验", "balance": "数量核对", "evidence": "追溯凭证",
+    "dispatch": "处置下发",
 }
 TABLES = {
     "intake": ("采信返件单", "entries", (("ticket", "票号"), ("serial", "序列件"), ("action", "动作"), ("at", "时间"), ("row", "来源行"))),

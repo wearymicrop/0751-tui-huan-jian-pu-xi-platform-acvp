@@ -11,6 +11,7 @@
 | M5 召回反查 | 按批号从子件沿时间交集向上回查 | `/api/recall` | `app/modules/recall/service.py` `app/modules/recall/windows.py` | `tests/test_recall.py` |
 | M6 数量核对 | 唯一件分配至四类并计算差额 | `/api/balance` | `app/modules/balance/service.py` | `tests/test_balance.py` |
 | M7 追溯凭证 | 查单件证据、按内容归档并下载 | `/api/evidence/{serial}`、`/api/runs` | `app/modules/evidence/service.py` `app/modules/evidence/store.py` `app/modules/evidence/serial.py` | `tests/test_evidence.py` |
+| M8 处置下发 | 把召回影响换算成逐件任务，补录后重算并保留保留/撤回/新增三态 | `/api/dispatches` | `app/modules/dispatch/service.py` `app/modules/dispatch/planner.py` `app/modules/dispatch/merge.py` | `tests/test_dispatch.py` |
 
 ## 陷阱清单
 
@@ -29,3 +30,7 @@
 | TRAP-23 | 两套样例 0008、UNIT-C | 子件拆出后仍把父链计入 | 对每层父边取半开交集 | `app/modules/recall/windows.py:5` | `tests/test_recall.py::test_intersection_does_not_invent_exposure` |
 | TRAP-25 | 脏样例事件第 19 条 | 同件重叠装在两处 | 维持已生效的父件并隔离重叠 | `app/modules/graph/edges.py:12` | `tests/test_graph.py::test_double_mount_keeps_original_parent` |
 | TRAP-26 | 脏样例事件第 17 条 | 陈旧动作覆盖已生效状态 | 逐子件维护递增序号 | `app/modules/sequence/service.py:29` | `tests/test_sequence.py::test_stale_revision_is_quarantined` |
+| TRAP-27 | 下发后再补入拆装记录 | 冻结首版范围会漏掉后补影响 | 每次按「初始 + 全部补录」重算全量影响 | `app/modules/dispatch/service.py` `app/modules/dispatch/merge.py` | `tests/test_dispatch.py::test_supplement_does_not_freeze_initial_scope` |
+| TRAP-28 | 补录改变某件归属 | 就地改写会让现场拿到两个冲突的同号任务 | 任务号随内容生成，旧号撤回、新号另发，界面列出三态 | `app/modules/dispatch/planner.py:49` | `tests/test_dispatch.py::test_late_record_withdraws_and_adds` |
+| TRAP-29 | 同一召回重跑或重复补录 | 每次调用都派一批新任务 | 批次/修订/作业/任务四层去重，同内容直接复用 | `app/modules/dispatch/service.py` `app/modules/dispatch/store.py` | `tests/test_dispatch.py::test_rerun_same_recall_does_not_redispatch` `tests/test_dispatch.py::test_duplicate_supplement_is_recorded_once` |
+| TRAP-30 | 落库中途失败 | 现场只看到半批任务、旧版丢失 | 合并在单个写事务内完成，失败回滚并保留旧修订与可续跑作业 | `app/modules/dispatch/service.py` `app/modules/dispatch/store.py` | `tests/test_dispatch.py::test_failed_apply_keeps_old_tasks_and_resumes` |

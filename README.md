@@ -17,6 +17,7 @@ docker compose up --build
 - 召回反查 `/api/recall` 返回指定批号的历史路径、交集及源行。
 - 数量核对 `/api/balance` 分区核对在装、库存、退回和争议。
 - 追溯凭证 `/api/evidence/{serial}` 逐件查证，`/api/runs` 保存与下载。
+- 处置下发 `/api/dispatches` 把召回影响逐件派单；`POST /supplements` 补入晚到记录后重算，`/revisions/{seq}` 追溯旧版任务。
 
 样例接口接受 `sample=clean` 或 `sample=dirty`。完整参数见服务的 `/docs`。
 
@@ -25,5 +26,7 @@ docker compose exec -T app pytest -q
 ```
 
 `archive` 命名卷保存 SQLite。需要清空历史时，`docker compose down --volumes` 会删除这个卷及其中归档。
+
+处置下发在「处置下发」页操作：先看预览范围，再按当前召回下发；晚到记录用「补入并重算」导入，页面会标出保留、撤回和新增。重跑同一召回、重复导入同一补录都不会重复派单。
 
 字段和时间边界见 [数据字典](docs/DATA-DICTIONARY.md)。模块、业务反例与测试索引见 [规则映射](docs/DEPTH.md)。

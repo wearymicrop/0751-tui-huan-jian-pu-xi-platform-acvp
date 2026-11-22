@@ -1,0 +1,25 @@
+<section class="panel" aria-labelledby="dispatch-title">
+  <header class="panel-head"><h2 id="dispatch-title">逐件处置任务</h2><span id="dispatch-summary" class="subtle"></span></header>
+  <div class="dispatch-bar">
+    <button class="primary" type="button" id="dispatch-run">按当前召回下发</button>
+    <label class="supplement-label">补录数据 <input id="supplement-file" type="file" accept=".json,application/json"></label>
+    <button type="button" id="supplement-send">补入并重算</button>
+    <button type="button" id="dispatch-refresh">重跑当前召回</button>
+  </div>
+  <div id="dispatch-delta" class="dispatch-delta" aria-live="polite"></div>
+  <div class="table-scroll"><table class="ledger" id="dispatch-table">
+    <thead><tr>
+      <th scope="col" data-field="task_id">任务号</th>
+      <th scope="col" data-field="serial">序列件</th>
+      <th scope="col" data-field="state">现场状态</th>
+      <th scope="col" data-field="action_label">处置动作</th>
+      <th scope="col" data-field="lane_label">执行口</th>
+      <th scope="col" data-field="priority">优先级</th>
+      <th scope="col" data-field="active_parent">有效父件</th>
+      <th scope="col" data-field="status">本版结果</th>
+      <th scope="col" data-field="evidences">暴露证据</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <footer id="dispatch-basis" class="panel-foot"></footer>
+</section>
